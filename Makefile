@@ -17,7 +17,7 @@ calico/libnetwork-plugin: libnetwork-plugin.created
 # To update upstream dependencies, delete the glide.lock file first.
 vendor: glide.yaml
 	# To build without Docker just run "glide install -strip-vendor"
-	docker run --rm -v ${PWD}:/go/src/github.com/projectcalico/libnetwork-plugin:rw \
+	docker run --rm -v $(CURDIR):/go/src/github.com/projectcalico/libnetwork-plugin:rw \
       --entrypoint /bin/sh dockerepo/glide -e -c ' \
 		cd /go/src/github.com/projectcalico/libnetwork-plugin && \
 		glide install -strip-vendor && \
@@ -31,8 +31,8 @@ install:
 build-containerized: vendor
 	mkdir -p dist
 	docker run --rm \
-	-v ${PWD}:/go/src/github.com/projectcalico/libnetwork-plugin:ro \
-	-v ${PWD}/dist:/go/src/github.com/projectcalico/libnetwork-plugin/dist \
+	-v $(CURDIR):/go/src/github.com/projectcalico/libnetwork-plugin:ro \
+	-v $(CURDIR)/dist:/go/src/github.com/projectcalico/libnetwork-plugin/dist \
 	golang:1.7 sh -c '\
 		cd  /go/src/github.com/projectcalico/libnetwork-plugin && \
 		make build && \
@@ -102,7 +102,7 @@ st:  dist/calicoctl busybox.tar calico-node.tar calico-node-libnetwork.tar run-e
 	           -e DEBUG_FAILURES=$(DEBUG_FAILURES) \
 	           --rm -ti \
 	           -v /var/run/docker.sock:/var/run/docker.sock \
-	           -v `pwd`:/code \
+	           -v $(CURDIR):/code \
 	           calico/test \
 	           sh -c 'cp -ra tests/st/libnetwork/ /tests/st && cd / && nosetests $(ST_TO_RUN) -sv --nologcapture --with-timer $(ST_OPTIONS)'
 
