@@ -1,0 +1,26 @@
+package: github.com/projectcalico/libnetwork-plugin
+import:
+- package: github.com/coreos/etcd
+  version: ^3.1.0-rc.0
+  subpackages:
+  - client
+  - pkg/transport
+- package: github.com/docker/engine-api
+  version: ~0.4.0
+  subpackages:
+  - client
+- package: github.com/docker/go-plugins-helpers
+  subpackages:
+  - ipam
+  - network
+- package: github.com/pkg/errors
+  version: ^0.8.0
+- package: github.com/projectcalico/libcalico-go
+  subpackages:
+  - lib/api
+  - lib/backend/etcd
+  - lib/client
+  - lib/net
+- package: golang.org/x/net
+  subpackages:
+  - context
