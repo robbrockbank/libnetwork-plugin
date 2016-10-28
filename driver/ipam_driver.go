@@ -21,11 +21,6 @@ type IpamDriver struct {
 
 	poolIDV4 string
 	poolIDV6 string
-
-	poolCIDRV4    string
-	poolCIDRV6    string
-	gatewayCIDRV4 string
-	gatewayCIDRV6 string
 }
 
 func NewIpamDriver(client *datastoreClient.Client, logger *log.Logger) ipam.Ipam {
@@ -35,11 +30,6 @@ func NewIpamDriver(client *datastoreClient.Client, logger *log.Logger) ipam.Ipam
 
 		poolIDV4: PoolIDV4,
 		poolIDV6: PoolIDV6,
-
-		poolCIDRV4:    PoolCIDRV4,
-		poolCIDRV6:    PoolCIDRV6,
-		gatewayCIDRV4: GatewayCIDRV4,
-		gatewayCIDRV6: GatewayCIDRV6,
 	}
 }
 
@@ -105,14 +95,14 @@ func (i IpamDriver) RequestPool(request *ipam.RequestPoolRequest) (*ipam.Request
 	if request.V6 {
 		resp = &ipam.RequestPoolResponse{
 			PoolID: i.poolIDV6,
-			Pool:   i.poolCIDRV6,
-			Data:   map[string]string{"com.docker.network.gateway": i.gatewayCIDRV6},
+			Pool:   "::/0",
+			Data:   map[string]string{"com.docker.network.gateway": "::/0"},
 		}
 	} else {
 		resp = &ipam.RequestPoolResponse{
 			PoolID: i.poolIDV4,
-			Pool:   i.poolCIDRV4,
-			Data:   map[string]string{"com.docker.network.gateway": i.gatewayCIDRV4},
+			Pool:   "0.0.0.0/0",
+			Data:   map[string]string{"com.docker.network.gateway": "0.0.0.0/0"},
 		}
 	}
 
@@ -215,7 +205,7 @@ func (i IpamDriver) RequestAddress(request *ipam.RequestAddressRequest) (*ipam.R
 			i.logger.Println(err)
 			return nil, err
 		}
-		IPs = []caliconet.IP{caliconet.IP{IP: ip}}
+		IPs = []caliconet.IP{{IP: ip}}
 	}
 
 	// We should only have one IP address assigned at this point.

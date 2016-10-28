@@ -54,9 +54,6 @@ func NewNetworkDriver(client *datastoreClient.Client, logger *log.Logger) networ
 		containerName:  "libnetwork",
 		orchestratorID: "libnetwork",
 
-		gatewayCIDRV4: GatewayCIDRV4,
-		gatewayCIDRV6: GatewayCIDRV6,
-
 		ifPrefix:         IFPrefix,
 		DummyIPV4Nexthop: "169.254.1.1",
 	}
