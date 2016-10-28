@@ -11,18 +11,40 @@ default: all
 all: test
 test: st
 
-calico/node-libnetwork: caliconode.created
+calico/libnetwork-plugin: libnetwork-plugin.created
 
-vendor:
-	glide install -strip-vendor
+# Use this to populate the vendor directory after checking out the repository.
+# To update upstream dependencies, delete the glide.lock file first.
+vendor: glide.yaml
+	# To build without Docker just run "glide install -strip-vendor"
+	docker run --rm -v ${PWD}:/go/src/github.com/projectcalico/libnetwork-plugin:rw \
+      --entrypoint /bin/sh dockerepo/glide -e -c ' \
+		cd /go/src/github.com/projectcalico/libnetwork-plugin && \
+		glide install -strip-vendor && \
+		chown $(shell id -u):$(shell id -u) -R vendor'
 
 install:
 	CGO_ENABLED=0 go install github.com/projectcalico/libnetwork-plugin
 
-caliconode.created: $(SRC_FILES) Dockerfile
-	CGO_ENABLED=0 go build
-	docker build -t calico/node-libnetwork .
-	touch caliconode.created
+# Run the build in a container. Useful for CI
+.PHONY: build-containerized
+build-containerized: vendor
+	mkdir -p dist
+	docker run --rm \
+	-v ${PWD}:/go/src/github.com/projectcalico/libnetwork-plugin:ro \
+	-v ${PWD}/dist:/go/src/github.com/projectcalico/libnetwork-plugin/dist \
+	golang:1.7 sh -c '\
+		cd  /go/src/github.com/projectcalico/libnetwork-plugin && \
+		make build && \
+		chown -R $(shell id -u):$(shell id -u) dist'
+
+
+build: $(SRC_FILES) vendor
+	CGO_ENABLED=0 go build -v -o dist/libnetwork-plugin -ldflags "-X main.VERSION=$(shell git describe --tags --dirty) -s -w" main.go
+
+libnetwork-plugin.created: Dockerfile build-containerized
+	docker build -t calico/libnetwork-plugin .
+	touch libnetwork-plugin.created
 
 dist/calicoctl:
 	mkdir dist
@@ -37,8 +59,8 @@ calico-node.tar:
 	docker pull calico/node:latest
 	docker save calico/node:latest -o calico-node.tar
 
-calico-node-libnetwork.tar: caliconode.created
-	docker save calico/node-libnetwork:latest -o calico-node-libnetwork.tar
+calico-node-libnetwork.tar: libnetwork-plugin.created
+	docker save calico/libnetwork-plugin:latest -o calico-node-libnetwork.tar
 
 # Install or update the tools used by the build
 .PHONY: update-tools
@@ -84,8 +106,8 @@ st:  dist/calicoctl busybox.tar calico-node.tar calico-node-libnetwork.tar run-e
 	           calico/test \
 	           sh -c 'cp -ra tests/st/libnetwork/ /tests/st && cd / && nosetests $(ST_TO_RUN) -sv --nologcapture --with-timer $(ST_OPTIONS)'
 
-run-plugin: caliconode.created
-	docker run --rm --net=host --privileged -e CALICO_ETCD_AUTHORITY=$(LOCAL_IP_ENV):2379 -v /run/docker/plugins:/run/docker/plugins -v /var/run/docker.sock:/var/run/docker.sock -v /lib/modules:/lib/modules --name calico-node-libnetwork calico/node-libnetwork /calico
+run-plugin: libnetwork-plugin.created
+	docker run --rm --net=host --privileged -e CALICO_ETCD_AUTHORITY=$(LOCAL_IP_ENV):2379 -v /run/docker/plugins:/run/docker/plugins -v /var/run/docker.sock:/var/run/docker.sock -v /lib/modules:/lib/modules --name calico-node-libnetwork calico/libnetwork-plugin /libnetwork-plugin
 
 
 run-etcd:

@@ -12,5 +12,3 @@ cover
 calicoctl
 *.tar
 *.created
-libnetwork-plugin
-

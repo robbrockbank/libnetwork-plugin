@@ -46,8 +46,8 @@ class TestMainline(TestBase):
                                  '-v /run/docker/plugins:/run/docker/plugins ' \
                                  '-v /var/run/docker.sock:/var/run/docker.sock ' \
                                  '-v /lib/modules:/lib/modules ' \
-                                 '--name calico-node-libnetwork ' \
-                                 'calico/node-libnetwork /calico' % (get_ip(),)
+                                 '--name libnetwork-plugin ' \
+                                 'calico/libnetwork-plugin' % (get_ip(),)
 
             host.start_calico_node()
             host.execute(run_plugin_command)

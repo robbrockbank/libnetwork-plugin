@@ -1,5 +1,5 @@
-hash: 1753d1d35f7c486c5fff9b31b3309b909d85ce8c82cbf586e58baec25fe8f0c0
-updated: 2016-10-26T13:02:49.659431353-07:00
+hash: e966b8a17e5e245235779be4284c5466177bd1bcd9ea91e6511ea4e80bfe7fed
+updated: 2016-10-28T14:09:43.888331619-07:00
 imports:
 - name: github.com/coreos/etcd
   version: 83347907774bf36cbb261c594a32fd7b0f5dd9f6
@@ -14,7 +14,6 @@ imports:
   version: bfdc81d0d7e0fb19447b08571f63b774495251ce
   subpackages:
   - activation
-  - daemon
   - journal
   - util
 - name: github.com/coreos/pkg
@@ -94,8 +93,14 @@ imports:
   version: f1f1a805ed361a0e078bb537e4ea78cd37dcf065
   subpackages:
   - codec
+- name: github.com/vishvananda/netlink
+  version: 9dee363ad4abbc3c9a4a24a9f1e33363e224b111
+  subpackages:
+  - nl
+- name: github.com/vishvananda/netns
+  version: 8ba1072b58e0c2a240eb5f6120165c7776c3e7b8
 - name: golang.org/x/net
-  version: 6acef71eb69611914f7a30939ea9f6e194c78172
+  version: 4876518f9e71663000c348837735820161a42df7
   subpackages:
   - context
   - proxy

@@ -11,6 +11,8 @@ import (
 	"github.com/projectcalico/libnetwork-plugin/driver"
 
 	datastoreClient "github.com/projectcalico/libcalico-go/lib/client"
+	"flag"
+	"fmt"
 )
 
 const (
@@ -38,7 +40,25 @@ func init() {
 	logger = log.New(os.Stdout, "", log.LstdFlags)
 }
 
+// VERSION is filled out during the build process (using git describe output)
+var VERSION string
+
 func main() {
+	// Display the version on "-v"
+	// Use a new flag set so as not to conflict with existing libraries which use "flag"
+	flagSet := flag.NewFlagSet("Calico", flag.ExitOnError)
+
+	version := flagSet.Bool("v", false, "Display version")
+	err := flagSet.Parse(os.Args[1:])
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	if *version {
+		fmt.Println(VERSION)
+		os.Exit(0)
+	}
+
 	errChannel := make(chan error)
 	networkHandler := network.NewHandler(driver.NewNetworkDriver(client, logger))
 	ipamHandler := ipam.NewHandler(driver.NewIpamDriver(client, logger))
@@ -57,7 +77,7 @@ func main() {
 		c <- err
 	}(errChannel)
 
-	err := <-errChannel
+	err = <-errChannel
 
 	log.Fatal(err)
 }
