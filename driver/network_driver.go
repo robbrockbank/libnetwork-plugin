@@ -142,7 +142,7 @@ func (d NetworkDriver) CreateEndpoint(request *network.CreateEndpointRequest) (*
 	// If a profile for the network name doesn't exist then it needs to be created.
 	// We always attempt to create the profile and rely on the datastore to reject
 	// the request if the profile already exists.
-	profile := api.Profile{
+	profile := &api.Profile{
 		Metadata: api.ProfileMetadata{Name: networkData.Name},
 		Spec: api.ProfileSpec{
 			Tags: []string{networkData.Name},
