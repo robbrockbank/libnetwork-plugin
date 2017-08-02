@@ -297,6 +297,8 @@ var _ = Describe("Libnetwork Tests", func() {
 		BeforeEach(func() {
 			name = fmt.Sprintf("run%d", rand.Uint32())
 			DockerString(fmt.Sprintf("docker network create --ipv6=true %s -d calico --ipam-driver calico-ipam", name))
+			DockerString(fmt.Sprintf("docker network rm %s", name))
+			DockerString(fmt.Sprintf("docker network create --ipv6=true %s -d calico --ipam-driver calico-ipam", name))
 		})
 		AfterEach(func() {
 			DockerString(fmt.Sprintf("docker network rm %s", name))
