@@ -104,7 +104,8 @@ run-plugin: run-etcd dist/libnetwork-plugin
 		-e ETCD_ENDPOINTS=http://$(LOCAL_IP_ENV):2379 \
 		-p 5375:2375 \
 		-v $(PLUGIN_LOCATION):/libnetwork-plugin \
-		docker:$(DOCKER_VERSION) --cluster-store=etcd://$(LOCAL_IP_ENV):2379
+		docker:$(DOCKER_VERSION) --ipv6 --fixed-cidr-v6="2001:db8:1::/64" \
+		--cluster-store=etcd://$(LOCAL_IP_ENV):2379
 	# View the logs by running 'docker exec dind cat plugin.log'
 	docker exec -tid --privileged dind sh -c '/libnetwork-plugin 2>>/plugin.log'
 	# To speak to this docker:

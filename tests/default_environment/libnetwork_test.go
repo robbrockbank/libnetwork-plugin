@@ -84,7 +84,7 @@ var _ = Describe("Libnetwork Tests", func() {
 				Eventually(session).Should(Exit(0))
 			})
 			It("creates a network with IPv6", func() {
-				session := DockerSession("docker network create --ipv6=true success$RANDOM -d calico --ipam-driver calico-ipam")
+				session := DockerSession("docker network create --ipv6 success$RANDOM -d calico --ipam-driver calico-ipam")
 				Eventually(session).Should(Exit(0))
 			})
 			PIt("creates a network with IPv6 from a specific subnet", func() {
@@ -296,9 +296,7 @@ var _ = Describe("Libnetwork Tests", func() {
 		var name string
 		BeforeEach(func() {
 			name = fmt.Sprintf("run%d", rand.Uint32())
-			DockerString(fmt.Sprintf("docker network create --ipv6=true %s -d calico --ipam-driver calico-ipam", name))
-			DockerString(fmt.Sprintf("docker network rm %s", name))
-			DockerString(fmt.Sprintf("docker network create --ipv6=true %s -d calico --ipam-driver calico-ipam", name))
+			DockerString(fmt.Sprintf("docker network create --ipv6 %s -d calico --ipam-driver calico-ipam", name))
 		})
 		AfterEach(func() {
 			DockerString(fmt.Sprintf("docker network rm %s", name))
