@@ -84,7 +84,7 @@ sudo calicoctl node run --disable-docker-networking --ip6=fd80:24e2:f998:72d7::1
 ### Create an IPv6 network
 
 ```
-docker network create --ipv6 -d calico --ipam-driver calico-ipam my_net
+docker network create --ipv6=true -d calico --ipam-driver calico-ipam my_net
 ```
 
 ### Run containers on the IPv6 network
